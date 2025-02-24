@@ -7,7 +7,20 @@ use App\Models\Wallet;
 
 use function Pest\Laravel\actingAs;
 
-test('dashboard page is displayed', function () {
+test('dashboard page is displayed to a new user without balance', function () {
+    $user = User::factory()->create();
+
+    $response = actingAs($user)->get('/');
+
+    $response
+        ->assertOk()
+        ->assertSeeTextInOrder([
+            __('Balance'),
+            'Transactions history',
+        ]);
+});
+
+test('dashboard page is displayed to a new user with balance', function () {
     $user = User::factory()->has(Wallet::factory()->richChillGuy())->create();
     $wallet = Wallet::factory()->richChillGuy()->for($user)->create();
 
